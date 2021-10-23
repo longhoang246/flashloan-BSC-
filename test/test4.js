@@ -22,7 +22,7 @@ function sendEther(web3, from, to, amount) {
     });
   }
 const amount = pow(10,6).mul(new BN('10000'));
-const amount1 = pow(10,6).mul(new BN('4'));
+const amount1 = pow(10,6).mul(new BN('1000'));
 const whale = '0xE30D674E46EaE016F85217515b69c3283AC6D625';
 
 const FlashLoan = artifacts.require('FlashLoan');
