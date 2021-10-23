@@ -39,7 +39,7 @@ contract FlashLoan is IBiswapCallee {
 
     event Log(string message, uint val);
 
-    function testFlashSwap(address[] memory _tokenBorrowPool,address _tokenSwap ,uint _amount, uint _from, address[] calldata _path, uint _amountOutminFrom, uint _amountOutminTo) external {
+    function testFlashSwap(address[] memory _tokenBorrowPool,uint _amount, uint _from, address[] calldata _path, uint _amountOutminFrom, uint _amountOutminTo) external {
         require(_tokenBorrowPool.length == 2,'suc dic');      
         address _tokenBorrow = _tokenBorrowPool[0];
         address _toToken = _tokenBorrowPool[1];
@@ -56,7 +56,7 @@ contract FlashLoan is IBiswapCallee {
         uint amount1Out = _tokenBorrow == token1 ? _amount : 0;
 
         // need to pass some data to trigger PancakeCall
-        bytes memory data = abi.encode(_tokenBorrow, _amount,_tokenSwap, from, _path, _amountOutminFrom, _amountOutminTo);
+        bytes memory data = abi.encode(_tokenBorrow, _amount, from, _path, _amountOutminFrom, _amountOutminTo);
 
         IBiswapPair(pair).swap(amount0Out, amount1Out, address(this), data);
     }
@@ -67,7 +67,7 @@ contract FlashLoan is IBiswapCallee {
         address pair = BiswapFactory.getPair(token0, token1);
         require(msg.sender == pair, "!pair");
         require(_sender == address(this), "!sender");
-        (address tokenBorrow, uint amount, address tokenSwap, address from, address[] calldata path, uint amountOutminFrom ,uint amountOutminTo ) = abi.decode(_data, (address, uint, address, address, address[], uint,uint));
+        (address tokenBorrow, uint amount, address from, address[] memory path, uint amountOutminFrom ,uint amountOutminTo ) = abi.decode(_data, (address, uint, address, address[], uint,uint));
         // about 0.1%
         uint fee = ((amount * 1) / 999) + 1;
         uint amountToRepay = amount + fee;
@@ -81,13 +81,12 @@ contract FlashLoan is IBiswapCallee {
 
         if (from == 0x10ED43C718714eb63d5aA57B78B54704E256024E) {
             IERC20(tokenBorrow).approve(from, amount);
-            uint[] memory amounts = router2.swapExactTokensForTokens(amount,amountOutminFrom,path,address(this),block.timestamp);
+            uint[] memory amounts = router2.swapExactTokensForTokens(amount,amountOutminFrom,path,address(this),block.timestamp+1000);
             address[] memory pathTo = new address[](2);
             pathTo[0] = path[path.length-1];
             pathTo[1] = path[0];
             IERC20(path[path.length-1]).approve(0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8, amounts[amounts.length-1]);
-            BiswapRouter.swapExactTokensForTokens(amounts[amounts.length-1], amountOutminTo, pathTo, address(this), block.timestamp);
-
+            uint[] memory amounts2 = BiswapRouter.swapExactTokensForTokens(amounts[amounts.length-1], amountOutminTo, pathTo, address(this), block.timestamp+1000);
         }
 
         IERC20(tokenBorrow).transfer(pair, amountToRepay);
