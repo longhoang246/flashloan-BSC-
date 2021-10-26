@@ -41,7 +41,7 @@ contract('FlashLoan', (accounts)=>{
     })
 
     it('test sit',async () =>{
-        const tx = await flash.testFlashSwap(['0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47','0x55d398326f99059fF775485246999027B3197955'],amount,1,['0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47','0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'], pow(10,6).mul(new BN('200000')), pow(10,6).mul(new BN('100000')));
+        const tx = await flash.testFlashSwap(['0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47','0x55d398326f99059fF775485246999027B3197955'],amount,1,pow(10,6).mul(new BN('200000')), pow(10,6).mul(new BN('100000')), ['0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47','0x55d398326f99059fF775485246999027B3197955']);
         console.log(tx)
         for (const log of tx.logs) {
             console.log(log.args.message, log.args.val.toString())
