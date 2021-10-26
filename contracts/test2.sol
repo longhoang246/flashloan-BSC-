@@ -4,7 +4,6 @@ pragma solidity 0.8.1;
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import './interfaces/IPancakeFactory.sol';
-import './interfaces/IPancakeRouter.sol';
  
 
 
@@ -20,12 +19,13 @@ contract PCPrice {
         address _pairAddress = _factory.getPair(_token0, _token1);
         IERC20 _token0_ = IERC20(_token0);
         IERC20 _token1_ = IERC20(_token1);
-        uint _reserve0 = _token0_.balanceOf(_pairAddress);
-        uint _reserve1 = _token1_.balanceOf(_pairAddress);
-        (uint _reserveIn, uint _reserveOut) = _tokenIn == _token0 ? (_reserve0,_reserve1) : (_reserve1,_reserve0);
+        uint[] memory reserve = new uint[](4);
+        reserve[0] = _token0_.balanceOf(_pairAddress);
+        reserve[1] = _token1_.balanceOf(_pairAddress);
+        (reserve[2], reserve[3]) = _tokenIn == _token0 ? (reserve[0],reserve[1]) : (reserve[1],reserve[0]);
         uint amountInWithFee = _amountIn.mul(9975);
-        uint numerator = amountInWithFee.mul(_reserveOut);
-        uint denomerator = _reserveIn.mul(10000).add(amountInWithFee);
+        uint numerator = amountInWithFee.mul(reserve[3]);
+        uint denomerator = reserve[2].mul(10000).add(amountInWithFee);
         uint amountOut = numerator/denomerator;
         return amountOut;
     }
