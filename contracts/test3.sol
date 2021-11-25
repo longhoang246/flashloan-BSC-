@@ -2,28 +2,23 @@ pragma solidity 0.8.1;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-import './interfaces/IPancakeFactory.sol';
 import './interfaces/IPancakeRouter.sol';
-import './interfaces/IPancakePair.sol';
 
 import './interfaces/IBiswapCallee.sol';
 import './interfaces/IBiswapFactory.sol';
-import './interfaces/IBiswapRouter02.sol';
 import './interfaces/IBiswapPair.sol';
 
 contract FlashLoan is IBiswapCallee {
 
-    IPancakeFactory factory;
     IBiswapFactory BiswapFactory;
 
-    address owner;
+    address private owner;
 
     receive() external payable {}
     
     constructor (){
         owner = msg.sender;
         BiswapFactory = IBiswapFactory(0x858E3312ed3A876947EA49d572A7C42DE08af7EE); 
-        factory = IPancakeFactory(0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73);
     }
 
     modifier onlyOwner {
@@ -82,7 +77,7 @@ contract FlashLoan is IBiswapCallee {
         require(amountOut > amountToRepay,"poor dumb sit");
 
         IERC20(tokenBorrow).transfer(pair, amountToRepay);
-        
+
         emit Log("money left",amountOut-amountToRepay);
     }
 
