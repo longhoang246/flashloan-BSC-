@@ -4,19 +4,16 @@ pragma solidity 0.8.1;
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import './interfaces/IPancakeFactory.sol';
-import './test4.sol';
-
 
 
 contract PCPrice {
     using SafeMath for uint;
-    Multicall multicall = Multicall(0xE1dDc30f691CA671518090931e3bFC1184BFa4Aa);
     
 
     IPancakeFactory pcs2f = IPancakeFactory(0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73);
     
     IPancakeFactory biswapf = IPancakeFactory(0x858E3312ed3A876947EA49d572A7C42DE08af7EE);
-
+    
     
 
     function getOut(uint _amountIn, address _token0, address _token1, address _tokenIn, uint _choose) public view returns(uint){
